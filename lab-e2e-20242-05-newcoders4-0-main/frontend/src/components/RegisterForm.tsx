@@ -26,93 +26,108 @@ export default function RegisterForm({
     }
 
     return (
-        <section className="login-section bg-secondary p-4 rounded-2xl">
-            <h1 className="text-2xl font-bold">Registrarse a Uber</h1>
-            <form onSubmit={handleSubmit}>
+        <section className="login-section bg-secondary p-6 rounded-2xl shadow-lg max-w-md mx-auto">
+            <h1 className="text-2xl font-bold mb-4 text-center">Registrarse a Uber</h1>
+            <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label htmlFor="firstName">Nombres</label>
+                    <label htmlFor="firstName" className="block text-muted-foreground">Nombres</label>
                     <input
                         type="text"
                         name="firstName"
                         id="firstName"
                         value={formData.firstName}
                         onChange={handleChange}
+                        className="w-full p-2 border border-border rounded"
                         required
                     />
                 </div>
                 <div>
-                    <label htmlFor="lastName">Apellidos</label>
+                    <label htmlFor="lastName" className="block text-muted-foreground">Apellidos</label>
                     <input
                         type="text"
                         name="lastName"
                         id="lastName"
                         value={formData.lastName}
                         onChange={handleChange}
+                        className="w-full p-2 border border-border rounded"
                     />
                 </div>
                 <div>
-                    <label htmlFor="email">Email</label>
+                    <label htmlFor="email" className="block text-muted-foreground">Email</label>
                     <input
                         type="email"
                         name="email"
                         id="email"
                         value={formData.email}
                         onChange={handleChange}
+                        className="w-full p-2 border border-border rounded"
                         required
                     />
                 </div>
                 <div>
-                    <label htmlFor="password">Contraseña</label>
+                    <label htmlFor="password" className="block text-muted-foreground">Contraseña</label>
                     <input
                         type="password"
                         name="password"
                         id="password"
                         value={formData.password}
                         onChange={handleChange}
+                        className="w-full p-2 border border-border rounded"
                         required
                     />
                 </div>
                 <div>
-                    <label htmlFor="phone">Celular</label>
+                    <label htmlFor="phone" className="block text-muted-foreground">Celular</label>
                     <input
                         type="text"
                         name="phone"
                         id="phone"
                         value={formData.phone}
                         onChange={handleChange}
+                        className="w-full p-2 border border-border rounded"
                     />
                 </div>
                 <div>
-                    <label>¿Eres Conductor?</label>
-                    <input
-                        type="radio"
-                        name="isDriver"
-                        id="driver"
-                        value="true"
-                        checked={formData.isDriver === true}
-                        onChange={() => setFormData({ ...formData, isDriver: true })}
-                    />{" "}
-                    Sí
-                    <input
-                        type="radio"
-                        name="isDriver"
-                        id="passenger"
-                        value="false"
-                        checked={formData.isDriver === false}
-                        onChange={() => setFormData({ ...formData, isDriver: false })}
-                    />{" "}
-                    No
+                    <label className="block text-muted-foreground mb-2">¿Eres Conductor?</label>
+                    <div className="flex items-center space-x-4">
+                        <label className="flex items-center">
+                            <input
+                                type="radio"
+                                name="isDriver"
+                                id="driver"
+                                value="true"
+                                checked={formData.isDriver === true}
+                                onChange={() => setFormData({ ...formData, isDriver: true })}
+                                className="mr-2"
+                            />
+                            Sí
+                        </label>
+                        <label className="flex items-center">
+                            <input
+                                type="radio"
+                                name="isDriver"
+                                id="passenger"
+                                value="false"
+                                checked={formData.isDriver === false}
+                                onChange={() => setFormData({ ...formData, isDriver: false })}
+                                className="mr-2"
+                            />
+                            No
+                        </label>
+                    </div>
                 </div>
-                <button
-                    type="button"
-                    onClick={() => setVehicleRegister(true)} 
-                    className="bg-primary text-white font-bold mx-6 py-2 px-4 rounded-full cursor-pointer"
-                >
-                    Registrar Vehículo
-                </button>
+                {formData.isDriver && (
+                    <button
+                        type="button"
+                        onClick={() => setVehicleRegister(true)}
+                        className="bg-primary text-white font-bold py-2 px-4 rounded-full cursor-pointer w-full mb-4"
+                    >
+                        Registrar Vehículo
+                    </button>
+                )}
                 <button
                     id="registerSubmit"
-                    className="bg-primary text-white font-bold mx-6 py-2 px-4 rounded-full cursor-pointer"
+                    className="bg-primary text-white font-bold py-2 px-4 rounded-full cursor-pointer w-full"
                     type="submit"
                 >
                     Registrarse

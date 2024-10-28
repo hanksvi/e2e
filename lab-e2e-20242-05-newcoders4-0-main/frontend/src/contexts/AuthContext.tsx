@@ -3,64 +3,44 @@ import { LoginRequest } from "@interfaces/auth/LoginRequest";
 import { RegisterRequest } from "@interfaces/auth/RegisterRequest";
 import Api from "@services/api";
 import { createContext, ReactNode, useContext, useEffect } from "react";
+import { login } from "@services/auth/login"; // Importar login
+import { register } from "@services/auth/register"; // Importar register
 
 interface AuthContextType {
-    register: (data: RegisterRequest) => Promise<void>;
-    login: (data: LoginRequest) => Promise<void>;
-    logout: () => void;
-    session?: string | null;
-    isLoading: boolean;
+	register: (data: RegisterRequest) => Promise<void>;
+	login: (data: LoginRequest) => Promise<void>;
+	logout: () => void;
+	session?: string | null;
+	isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-async function login(loginRequest: LoginRequest): Promise<{ token: string }> {
-    const api = await Api.getInstance();
-    const response = await api.post<LoginRequest, { token: string }>(
-        loginRequest,
-        { url: "/auth/login" }
-    );
-    return response.data; // Asegúrate de que el backend responde con `{ token: string }`
-}
-
-async function registerService(registerRequest: RegisterRequest): Promise<{ token: string }> {
-    const api = await Api.getInstance();
-    const response = await api.post<RegisterRequest, { token: string }>(
-        registerRequest,
-        { url: "/auth/register" }
-    );
-    return response.data; // Asegúrate de que el backend responde con `{ token: string }`
-}
-
-async function loginHandler(
-    loginRequest: LoginRequest,
-    setSession: (value: string) => void
-) {
-    const response = await login(loginRequest);
-    setSession(response.token); // Utiliza `response.token` si es un objeto `{ token: string }`
-}
-
-async function signupHandler(
-    signupRequest: RegisterRequest,
-    setSession: (value: string) => void
-) {
-    const response = await registerService(signupRequest);
-    setSession(response.token); // Utiliza `response.token` si es un objeto `{ token: string }`
-}
-
 export function AuthProvider(props: { children: ReactNode }) {
-    const [[isLoading, session], setSession] = useStorageState("token"); // Aquí desestructuramos `isLoading` y `session`
+	const [[isLoading, session], setSession] = useStorageState("token");
 
-    useEffect(() => {
+	useEffect(() => {
         if (session) {
-            Api.getInstance().then((api) => {
-                api.authorization = session;
-            });
+            try {
+                Api.getInstance().then((api) => {
+                    api.authorization = session;
+                });
+            } catch (error) {
+                console.error("Error setting authorization:", error);
+            }
         }
     }, [session]);
 
-    const login = (data: LoginRequest) => loginHandler(data, setSession);
-    const register = (data: RegisterRequest) => signupHandler(data, setSession);
+	const loginUser = async (data: LoginRequest) => { // Cambiar a loginUser
+		const response = await login(data); // Usar login importado
+		setSession(response.token);
+	};
+
+	const registerUser = async (data: RegisterRequest) => { // Cambiar a registerUser
+		const response = await register(data); // Usar register importado
+		setSession(response.token);
+	};
+
 	const logout = () => {
 		setSession(null);
 		Api.getInstance().then((api) => {
@@ -68,17 +48,17 @@ export function AuthProvider(props: { children: ReactNode }) {
 		});
 	};
 
-    return (
-        <AuthContext.Provider value={{ register, login, logout, session, isLoading }}>
-            {props.children}
-        </AuthContext.Provider>
-    );
+	return (
+		<AuthContext.Provider value={{ register: registerUser, login: loginUser, logout, session, isLoading }}>
+			{props.children}
+		</AuthContext.Provider>
+	);
 }
 
 export function useAuthContext() {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error("useAuthContext must be used within an AuthProvider");
-    }
-    return context;
+	const context = useContext(AuthContext);
+	if (context === undefined) {
+		throw new Error("useAuthContext must be used within an AuthProvider");
+	}
+	return context;
 }

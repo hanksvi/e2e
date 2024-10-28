@@ -55,6 +55,7 @@ export default function LoginForm() {
           type="submit"
         >
           Iniciar Sesión
+          className="text-2xl font-bold mb-4 text-center text-white"
         </button>
       </form>
       {error && <div style={{ color: "red" }}>{error}</div>}
